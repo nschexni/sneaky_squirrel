@@ -1,0 +1,200 @@
+<html>
+<head>
+	<title>JavaScript Object Notes</title>
+
+<script type="text/javascript">
+
+</script>
+<style type="text/css">
+	pre {color:red;}
+</style>
+</head>
+<body>
+<ul>
+	<li><h2>OBJECTS</h2></li>
+	<li>Objects are created in a couple of ways.</li>
+		<ul>
+			<li> Literal Notation: <pre> var toilet = new Object(); </pre></li>
+				<ul>
+					<li> you can set Properties by referencing the Object and appending the Property you want to set: <pre> toilet.tankCapacity = 4.8;  </pre></li>
+					<li> you can access the Property by calling the Object and the Property using dot notation <pre>toilet.tankCapacity;</pre> </li>
+				</ul>
+		</ul>
+		<ul>
+			<li>Curly Brackets:</li>
+				<ul>
+					<li>you can declare an Object and a series of Properties using {} 
+						<pre>var toilet = {tankCapacity:4.8, brand:'Sloan'}</pre>
+					</li>
+				</ul>
+		</ul>
+	<li>Objects encapsulate Data and Behavior.  Behavior is created via Functions.</li>
+		<ul>
+			<li>
+				Functions are created 2 ways:<br>
+				1. using 'var keyword'
+				<pre>
+	var flush = function(){
+		console.log("clearing out the contents");
+	}
+				</pre>
+
+				2. shorthand
+				<pre>
+	function flush(){
+		console.log("clearing out the contents");
+	}
+				</pre>
+			</li>
+			<li>You invoke a function by stating it's name and ()
+				<pre>flush();</pre>
+			</li>
+			<li>
+				Functions can include arguments.  To pass an argument, include it in the ()
+				<pre>
+	var fillTank = function(volume){
+		console.log("Filling tank with " + volume + " liters of water");
+	}
+				</pre>
+				- When invoking with an argument:
+				<pre>
+	fillTank(4.8);					
+				</pre>
+			</li>
+			<li>
+				Methods are just an Object Property that happens to be a Function.<br>
+				To assign a 'flush' Method to our toilet Object:
+				<pre>
+	toilet.flush = function(){
+		console.log("clearing out contents");
+	}					
+				</pre>
+		And to call it:
+		<pre>
+	toilet.flush();			
+		</pre>
+			</li>
+		</ul>
+
+		<li>
+			THIS!!!
+		</li>
+			<ul>
+				<li>
+					Within an Objects Methods, you can't access other Properties directly:<br>
+					- following example doesn't work (you'll get a 'not defined' error) =>
+					<pre>
+	toilet.brand = 'Sloan';
+	toilet.flush = function(){
+		console.lot("clearing out the content of " + brand);
+	}						
+					</pre> <br>
+					You'll need to use the keyword 'this'. 'this' is a reference to the Object that the Method was called on.  <br>
+					<pre>
+	toilet.flush = function(){
+		console.lot("clearing out the content of " + this.brand);
+	}						
+					</pre>
+				</li>
+
+				<li>
+					Methods are only loosely tied to the Objects thier attached to. Methods have thier own 'call' Method which lets you specify any value you want for 'this'. <br>
+					- Here we are calling the 'flush' Method with the 'Delta' Object.  Therefore 'this' will reference the 'Delta' object.
+<pre>
+	toilet.flush.call({brand: 'Delta'});
+</pre>
+				</li>
+
+			</ul>
+</ul>
+<hr>
+
+<ul>
+	<li><h2>CONSTRUCTORS</h2></li>
+		<ul>
+			<li>
+			Constructors use the 'function' declaration.  Convention has the name of the Constructor in upercase.
+				<pre>
+	function Toilet(brand){
+		this.brand = brand;
+		this.tankCapacity = 4.8;
+	}					
+				</pre>
+			</li>
+			<li>
+				You can make as many Objects as you like from the Constructor. <br>
+				When a call to the Object is preceded with the keyword 'new', the 'this' variable gets set to a new Object instance, which will automatically be the function's returned value. 
+<pre>
+	var myToilet = new Toilet('Sloan');
+</pre>				
+			</li>
+			<li>
+				All new derived Objects have a reference to the 'constructor' used to create it.
+<pre>
+	myToilet.constructor
+</pre>				
+			</li>
+		</ul>
+</ul>	
+<hr>
+<ul>
+	<li><h2>PROTOTYPES</h2></li>
+	<li>A Prototoype is an Object on which other Objects are based.</li>
+	<li>example:
+<pre>
+	Toilet.prototype.sanitize = function(){
+		console.log("Sanitizing " + this.brand);
+	}
+</pre>
+	</li>
+	<li>
+		Prototype gets applied on any instance of the derived Object.
+		<pre>
+	myToilet.sanitize();		
+		</pre>
+	</li>
+	<li>Javascript checks the 'constructor' first for properties and methods.  If none is found, it then searches the Prototypes.
+	<br>--<br>
+	If a method or property is declared on the instance itself - it will find it on the constructor and won't look further to the Prototype. 
+	</li>
+	<li>JavaScript Inheritance:<br>
+		Prototype Chaining => JavaScript will check a Prototypes Prototype (and so on and so on) to find a method or property.
+		<pre>
+	//FancyToilet constructor based on the Toilet constructor		
+	function FancyToilet(brand){
+		Toilet.call(this, brand);
+	}
+	FancyToilet.prototype = new Toilet();
+	FancyToilet.prototype.useBidet = function(){
+		console.log("Ahh, refreshing!");
+	}
+		</pre>
+
+	- You can call both Toilet constructor methods and the FancyToilet methods
+	<pre>
+	var newToilet = new FancyToilet("Toto");
+	newToilet.useBidet();
+	newToilet.sanitize();
+	</pre>	
+	</li>
+
+	<li>
+		The newToilet constructor references Toilet constructor, instead of FancyToilet. To fix add 'this.constructor':
+		<pre>
+	function FancyToilet(brand){
+		Toilet.call(this, brand);
+		this.constructor = FancyToilet;
+	}		
+	------------
+	var fixedToilet = new FancyToilet("Kohler");
+	fixedToilet.constructor;  //this will reference the FancyToilet Constructor
+
+		</pre>
+	</li>
+
+
+</ul>
+
+</body>
+</html>
+

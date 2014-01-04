@@ -33,21 +33,6 @@ function listPlayers(){
 	return list;
 }
 
-//?build the score treestump?
-function scoreCard(){
-	//card is an array of acorn spaces. acorn is individual colored acorns
-	var card = [],acorn;
-	//get the number of players
-	for(var j = 0; j < players[j].length; j++){
-		//get the number of acorn spaces
-		for (var k = 0; k < players[j].stump.playerStump.length; k++) {
-			//
-			card += players[j].stump.playerStump.length;
-		}
-	}
-	return card;
-}
-
 //Spinner Class.  
 //Represents the spin wheel. 
 //Returns: id, name, instruction, and action of spin result
@@ -136,15 +121,12 @@ function Spinner() {
     };
 }
 
-
-
 //function to check is player already has the acorn color in their stump
 function acornCheck(player, result){
-	for (var k = players[player].stump.playerStump.length - 1; k >= 0; k--) {
-		//console.log(players[player].stump.playerStump[i]);
-		if(players[player].stump.playerStump[k].color === result.color){
-			if(players[player].stump.playerStump[k].isEmpty === true){
-				players[player].stump.playerStump[k].isEmpty = false;
+	for (var k = players[player].stump.space.length - 1; k >= 0; k--) {
+		if(players[player].stump.space[k].color === result.color){
+			if(players[player].stump.space[k].isEmpty === true){
+				players[player].stump.space[k].isEmpty = false;
 			}else{
 				console.log('You already have this Acorn!');
 			}
@@ -155,7 +137,7 @@ function acornCheck(player, result){
 //Game Piece Class
 function TreeStump() {
 	var empty = Boolean(true);
-	this.playerStump = [
+	this.space = [
 		{
 			color: 'red',
 			isEmpty: empty

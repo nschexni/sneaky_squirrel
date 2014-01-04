@@ -164,11 +164,25 @@ function TreeStump() {
 	$('.playerBox').html('<p>playerCard</p>');
 }
 
+//manage who's turn it is
+function playerTurn(){
+	var numOfPlayers = players.length;
+	var currentPlayer = players[0];
+	return currentPlayer;
+
+
+
+
+	// for (var i = 0; i <= numOfPlayers - 1; i++) {
+	// 	players.player[i++];
+	// };
+}
+
 //---Declare Variables---//
 
 //holds the list of players
-var players = [],
-	spinner = new Spinner()
+var players = []
+	,spinner = new Spinner()
 ;
 
 

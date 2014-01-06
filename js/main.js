@@ -123,15 +123,19 @@ function Spinner() {
 
 //function to check is player already has the acorn color in their stump
 function acornCheck(player, result){
-	for (var k = players[player].stump.space.length - 1; k >= 0; k--) {
-		if(players[player].stump.space[k].color === result.color){
-			if(players[player].stump.space[k].isEmpty === true){
-				players[player].stump.space[k].isEmpty = false;
+	var message;
+	for (var k = currentPlayer.stump.space.length - 1; k >= 0; k--) {
+		if(currentPlayer.stump.space[k].color === result.color){
+			if(currentPlayer.stump.space[k].isEmpty === true){
+				currentPlayer.stump.space[k].isEmpty = false;
 			}else{
 				console.log('You already have this Acorn!');
+				message = ' ,but you already have this Acorn!';
+				$('.spin_action_result').append(message);
 			}
 		}
-	};	
+	}
+	return;
 }
 
 //Game Piece Class
@@ -164,64 +168,68 @@ function TreeStump() {
 	$('.playerBox').html('<p>playerCard</p>');
 }
 
+//Counter
+function countByOne(){
+	if(counter >= players.length -1){
+		counter = 0;
+	}else{
+		counter = counter + 1;
+	}
+	return counter;
+}
+
 //manage who's turn it is
 function playerTurn(){
-	var numOfPlayers = players.length;
-	var currentPlayer = players[0];
+	countByOne();
+	currentPlayer = players[counter];
 	return currentPlayer;
-
-
-
-
-	// for (var i = 0; i <= numOfPlayers - 1; i++) {
-	// 	players.player[i++];
-	// };
 }
+
+function playerTurnActions(){
+	$('#spin_button').click(function(){
+		//1. when a user clicks Spin the Wheel, pick a random wheelElement
+		var result = spinner.spin();
+		//print who's turn it is
+		$('.player_turn_information').html('It is player: '+ currentPlayer.name +'\'s turn.');
+		$('.spin_action_result').html(result.instruction);
+		//2. check to see if the wheelElement is a Color or Event
+		var colorOrAction = result.hasOwnProperty('color');
+		if(colorOrAction){
+			//sanity check
+			console.log(result.color);
+			console.log(currentPlayer.name);
+			//3. if it is a Color, check to see if the users treeStump already has the Color
+			//3a. add color to treeStump if it doesn't exist, else skip turn
+			acornCheck(currentPlayer,result);
+		}
+		playerTurn();
+	});
+}
+
 
 //---Declare Variables---//
 
-//holds the list of players
-var players = []
-	,spinner = new Spinner()
-;
-
-
-
+//holds the list of players, creates a spinner, sets current player, and sets initial counter
+var players = [],spinner = new Spinner(),currentPlayer,counter;
 
 //Begin the game by asking the number of players and their name
 startGame();
+//initialize the first player
+counter = 0;
+currentPlayer = players[0];
 
 $(document).ready(function(){
 	//make the players name visible
 	$('.player_table').append(listPlayers());
-	//who's turn is it?	
-	for(var j = 0; j < players.length;j++){
-		//print who's turn it is
-		$('.player_turn_information').html('It is player: '+ players[j].name +'\'s turn.');
-		//1. when a user clicks Spin the Wheel, pick a random wheelElement
-		$('#spin_button').click(function(){
-			var result = spinner.spin();
-			$('.spin_action_result').html(result.instruction);
-			//2. check to see if the wheelElement is a Color or Event
-			var colorOrAction = result.hasOwnProperty('color');
-			if(colorOrAction){
-				//sanity check
-				console.log(result.color);
-				console.log(players[j].name);
-				//3. if it is a Color, check to see if the users treeStump already has the Color
-				acornCheck(j,result);	
-			}
-		});
-		return;
-	}
+	$('.player_turn_information').html('It is player: '+ currentPlayer.name +'\'s turn.');
 });
 
+playerTurnActions(currentPlayer);
 
 
 
 
 
-//3a. add color to treeStump if it doesn't exist, else skip turn
 //3b. check to see if the active players treeStump is full.  if so, they win. else move to next player
 //4. if it is an Event, check to see which Event it is
 //4a. if event is Sneaky Squire - steal an Acorn from another player

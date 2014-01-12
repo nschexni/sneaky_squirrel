@@ -5,33 +5,51 @@
 
 //Player Class
 function Player(name){
+	this.id = countByOne;
 	this.name = name;
 	this.stump = new TreeStump();
 }
 
+
+function getPlayers(){
+	var numberOfPlayers = prompt('How many players do we have?'),playerName = '',player = {};
+	//sanity check
+	console.log('num of players is ' + numberOfPlayers);
+	for (var i = 0; i < numberOfPlayers; i++) {
+		playerName = prompt('What is this player '+ (i+1) +'\'s name?');
+		player[i] = new Player(playerName);
+		players.push(player[i]);
+	}
+	return players;
+}
+
 //ask for number of players and each players name
 function startGame(){
-		var numberOfPlayers = prompt('How many players do we have?'),playerName = '',player = {};
-		//sanity check
-		console.log('num of players is ' + numberOfPlayers);
-		for (var i = 0; i < numberOfPlayers; i++) {
-			playerName = prompt('What is this player '+ (i+1) +'\'s name?');
-			player[i] = new Player(playerName);
-			players.push(player[i]);
-		}
-		return players;
-	}
+	getPlayers();
+}
+
 
 //Makes a list of the players
 function listPlayers(){
 	var list = [],playerName,playerBox;
 	for (var i = 0; i < players.length; i++) {
 		playerName = players[i].name;
-		playerBox = '<div class="playerBox" >'+playerName+'</div>';
+		playerBox = '<div class="playerBox" id="'+playerName+'" >'+playerName+'</div>';
 		list.push(playerBox);
 	}
 	return list;
 }
+
+//working on displaying stump colors
+function filled(){
+	var playerAcorns,playerName;
+	playerName = currentPlayer.name;
+	for(var j = 0; j <= currentPlayer.stump.space.length -1;j++){
+		playerAcorns = '<p>'+currentPlayer.stump.space[j].color +' is '+ currentPlayer.stump.space[j].isEmpty+'</p>';
+		$('.playerBox').append(playerAcorns);
+	}
+}
+
 
 //Spinner Class.  
 //Represents the spin wheel. 
@@ -202,10 +220,10 @@ function playerTurnActions(){
 			//3a. add color to treeStump if it doesn't exist, else skip turn
 			acornCheck(currentPlayer,result);
 		}
+		filled();
 		playerTurn();
 	});
 }
-
 
 //---Declare Variables---//
 
@@ -221,6 +239,7 @@ currentPlayer = players[0];
 $(document).ready(function(){
 	//make the players name visible
 	$('.player_table').append(listPlayers());
+	$('.player_table').append(filled());
 	$('.player_turn_information').html('It is player: '+ currentPlayer.name +'\'s turn.');
 });
 
